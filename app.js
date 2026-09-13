@@ -22,7 +22,7 @@
 
 const HIJRI_MONTHS_EN = [
   "Muharram", "Safar", "Rabi al-Awwal", "Rabi al-Aakhir",
-  "Jumada al-Ula", "Jumada al-Aakhirah", "Rajab", "Shaban",
+  "Jumada al-Ula", "Jumad-us-Saani", "Rajab", "Shaban",
   "Ramadan", "Shawwal", "Dhul-Qadah", "Dhul-Hijjah"
 ];
 
@@ -42,10 +42,10 @@ function hijriMonthLength(monthNumber1to12) {
 const DEFAULT_ANCHOR = {
   hijriMonth: 4,
   hijriYear: 1448,
-  gregStart: "2026-09-12" // YYYY-MM-DD, first day of that Hijri month
+  gregStart: "2026-09-13" // YYYY-MM-DD, first day of that Hijri month
 };
 
-const STORAGE_KEY = "hijriCalendarAnchor_v1";
+const STORAGE_KEY = "hijriCalendarAnchor_v1.1";
 
 const WEEKDAYS_EN = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
