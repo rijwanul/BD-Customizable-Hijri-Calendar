@@ -21,7 +21,7 @@
 ========================================================= */
 
 const HIJRI_MONTHS_EN = [
-  "Muharram", "Safar", "Rabi al-Awwal", "Rabi al-Aakhir",
+  "Muharram", "Safar", "Rabi al-Awwal", "Rabi-us-Saani",
   "Jumada al-Ula", "Jumad-us-Saani", "Rajab", "Shaban",
   "Ramadan", "Shawwal", "Dhul-Qadah", "Dhul-Hijjah"
 ];
