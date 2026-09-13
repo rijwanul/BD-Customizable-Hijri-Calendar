@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hijri Calendar — Bangladesh</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <i data-lucide="moon-star"></i>
+      </div>
+      <div class="brand-text">
+        <h1>Hijri Calendar</h1>
+        <p class="brand-sub" id="regionLine">Default calendar for Bangladesh</p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="icon-btn" id="settingsBtn" aria-haspopup="dialog" aria-expanded="false" title="Set month start date">
+        <i data-lucide="settings-2"></i>
+        <span>Set start date</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <section class="month-switcher" aria-label="Month navigation">
+      <button class="nav-btn" id="prevBtn" title="Previous month">
+        <i data-lucide="chevron-left"></i>
+      </button>
+
+      <div class="month-title">
+        <h2 id="monthNameEn">Rabi al-Aakhir 1448</h2>
+        <p id="monthNameBn" class="bn">রবিউস সানি ১৪৪৮</p>
+        <p id="monthRangeEn" class="range">September – October 2026</p>
+      </div>
+
+      <button class="nav-btn" id="nextBtn" title="Next month">
+        <i data-lucide="chevron-right"></i>
+      </button>
+    </section>
+
+    <section class="calendar-card">
+      <div class="weekday-row" id="weekdayRow"></div>
+      <div class="days-grid" id="daysGrid"></div>
+    </section>
+
+    <section class="legend">
+      <div class="legend-item">
+        <span class="dot dot-today"></span> Today
+      </div>
+      <div class="legend-item">
+        <span class="dot dot-friday"></span> Friday
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <a class="fb-link" href="https://facebook.com/islamicfoundationbangladesh/" target="_blank" rel="noopener noreferrer">
+        <i data-lucide="facebook"></i>
+        <span>Islamic Foundation, Bangladesh — Notices on Facebook</span>
+        <i data-lucide="external-link" class="ext-icon"></i>
+      </a>
+    </footer>
+
+  </main>
+
+</div>
+
+<!-- Settings Dialog -->
+<div class="overlay" id="overlay"></div>
+<div class="dialog" id="settingsDialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+  <div class="dialog-head">
+    <h3 id="dialogTitle">Set month start date</h3>
+    <button class="icon-btn close-btn" id="closeDialog" title="Close">
+      <i data-lucide="x"></i>
+    </button>
+  </div>
+
+  <div class="dialog-body">
+    <p class="dialog-hint">
+      Tell the calendar when a Hijri month began, and it will build the rest around it.
+      This overrides the Bangladesh default.
+    </p>
+
+    <label class="field">
+      <span>Hijri month</span>
+      <select id="hijriMonthSelect"></select>
+    </label>
+
+    <label class="field">
+      <span>Hijri year</span>
+      <input type="number" id="hijriYearInput" min="1300" max="1600" step="1">
+    </label>
+
+    <label class="field">
+      <span>Gregorian start date (1st of the month)</span>
+      <input type="date" id="gregStartInput">
+    </label>
+
+    <div class="dialog-actions">
+      <button class="btn-secondary" id="resetDefaultBtn">
+        <i data-lucide="rotate-ccw"></i>
+        Reset to Bangladesh default
+      </button>
+      <button class="btn-primary" id="applyBtn">
+        <i data-lucide="check"></i>
+        Apply
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="app.js"></script>
+</body>
+</html>
