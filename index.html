@@ -3,11 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hijri Calendar — Bangladesh</title>
+<title>Hijri Calendar, Bangladesh</title>
+
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css">
 </head>
@@ -27,6 +31,10 @@
     </div>
 
     <div class="topbar-actions">
+      <button class="icon-btn" id="layoutToggleBtn" title="Swap which date shows on top" aria-pressed="false">
+        <i data-lucide="arrow-up-down"></i>
+        <span id="layoutToggleLabel">Hijri on top</span>
+      </button>
       <button class="icon-btn" id="settingsBtn" aria-haspopup="dialog" aria-expanded="false" title="Set month start date">
         <i data-lucide="settings-2"></i>
         <span>Set start date</span>
@@ -42,9 +50,10 @@
       </button>
 
       <div class="month-title">
-        <h2 id="monthNameEn">Rabi al-Aakhir 1448</h2>
+        <h2 id="monthNameEn">Rabi-us-Saani 1448</h2>
+        <p id="monthNameAr" class="ar">ربيع ثان ١٤٤٨</p>
         <p id="monthNameBn" class="bn">রবিউস সানি ১৪৪৮</p>
-        <p id="monthRangeEn" class="range">September – October 2026</p>
+        <p id="monthRangeEn" class="range">September, October 2026</p>
       </div>
 
       <button class="nav-btn" id="nextBtn" title="Next month">
@@ -69,7 +78,7 @@
     <footer class="page-footer">
       <a class="fb-link" href="https://facebook.com/islamicfoundationbangladesh/" target="_blank" rel="noopener noreferrer">
         <i data-lucide="facebook"></i>
-        <span>Islamic Foundation, Bangladesh — Notices on Facebook</span>
+        <span>Islamic Foundation, Bangladesh</span>
         <i data-lucide="external-link" class="ext-icon"></i>
       </a>
     </footer>
@@ -105,8 +114,31 @@
     </label>
 
     <label class="field">
-      <span>Gregorian start date (1st of the month)</span>
-      <input type="date" id="gregStartInput">
+      <span>Gregorian start date (1st of the month), format: dd/mm/yyyy</span>
+      <div class="date-field-wrapper" id="dateFieldWrapper">
+        <div class="date-input-row">
+          <input type="text" id="gregStartInput" placeholder="dd/mm/yyyy" inputmode="numeric" autocomplete="off">
+          <button type="button" class="calendar-icon-btn" id="calendarIconBtn" title="Open calendar" aria-label="Open calendar">
+            <i data-lucide="calendar-days"></i>
+          </button>
+        </div>
+
+        <div class="date-picker-popup" id="datePickerPopup">
+          <div class="picker-head">
+            <button type="button" class="picker-nav-btn" id="pickerPrevBtn" title="Previous month" aria-label="Previous month">
+              <i data-lucide="chevron-left"></i>
+            </button>
+            <span id="pickerMonthLabel">September 2026</span>
+            <button type="button" class="picker-nav-btn" id="pickerNextBtn" title="Next month" aria-label="Next month">
+              <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+          <div class="picker-weekday-row">
+            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+          </div>
+          <div class="picker-days-grid" id="pickerDaysGrid"></div>
+        </div>
+      </div>
     </label>
 
     <div class="dialog-actions">
@@ -123,6 +155,7 @@
 </div>
 
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="hijri-core.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
