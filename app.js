@@ -11,6 +11,7 @@ const {
   HIJRI_MONTHS_EN,
   HIJRI_MONTHS_SHORT,
   GREGORIAN_MONTHS_SHORT,
+  WEEKDAYS_LONG_EN,
   HIJRI_MONTHS_AR,
   HIJRI_MONTHS_BN,
   hijriMonthLength,
@@ -19,10 +20,13 @@ const {
   toISODate,
   toShortGregLabel,
   toShortHijriLabel,
+  toHijriNumericDate,
+  toMediumGregLabel,
   addDaysUTC,
   isSameUTCDate,
   isoWeekdayIndex,
   computeGregStartFor,
+  gregorianToHijri,
   loadAnchor,
   saveAnchor,
   clearSavedAnchor
@@ -30,6 +34,7 @@ const {
 
 const WEEKDAYS_EN = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 const LAYOUT_STORAGE_KEY = "hijriCalendarLayout_v1"; // "hijri-top" or "gregorian-top"
+const VIEW_STORAGE_KEY = "hijriCalendarView_v1"; // "month" or "desk"
 
 /* ---------------- State ---------------- */
 
@@ -39,8 +44,15 @@ let state = {
   viewMonth: null,
   viewYear: null,
   viewGregStart: null,
-  layout: "hijri-top" // default
+  layout: "hijri-top", // default
+  activeView: "month" // "month" or "desk"
 };
+
+// The Gregorian date currently shown in Desk View (Date object, UTC midnight).
+let deskViewDate = null;
+
+let isFocusMode = false;
+let isFullscreenMode = false;
 
 // The date currently selected in the custom picker (Date object, UTC midnight, or null).
 let pickerSelectedDate = null;
@@ -59,6 +71,20 @@ function loadLayout() {
 function saveLayout(layout) {
   try {
     localStorage.setItem(LAYOUT_STORAGE_KEY, layout);
+  } catch (e) { /* ignore */ }
+}
+
+function loadView() {
+  try {
+    const saved = localStorage.getItem(VIEW_STORAGE_KEY);
+    if (saved === "month" || saved === "desk") return saved;
+  } catch (e) { /* ignore */ }
+  return "month";
+}
+
+function saveView(view) {
+  try {
+    localStorage.setItem(VIEW_STORAGE_KEY, view);
   } catch (e) { /* ignore */ }
 }
 
@@ -175,13 +201,6 @@ function renderDaysGrid() {
       cell.appendChild(gregLabel);
     }
 
-    if (isToday) {
-      const tag = document.createElement("div");
-      tag.className = "today-tag";
-      tag.textContent = "Today";
-      cell.appendChild(tag);
-    }
-
     grid.appendChild(cell);
   }
 }
@@ -192,6 +211,107 @@ function renderToggleUI() {
   btn.setAttribute("aria-pressed", String(isGregTop));
   document.getElementById("layoutToggleLabel").textContent =
     isGregTop ? "Gregorian on top" : "Hijri on top";
+}
+
+/* ---------------- View switcher (Month Grid / Desk View) ---------------- */
+
+function switchToView(view) {
+  state.activeView = view;
+  saveView(view);
+
+  const monthTab = document.getElementById("monthViewTab");
+  const deskTab = document.getElementById("deskViewTab");
+  const monthSection = document.getElementById("monthView");
+  const deskSection = document.getElementById("deskView");
+
+  const isDesk = view === "desk";
+  monthTab.setAttribute("aria-selected", String(!isDesk));
+  deskTab.setAttribute("aria-selected", String(isDesk));
+  monthSection.hidden = isDesk;
+  deskSection.hidden = !isDesk;
+
+  if (isDesk) {
+    if (!deskViewDate) {
+      const today = new Date();
+      deskViewDate = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+    }
+    renderDeskView();
+  }
+}
+
+function renderDeskView() {
+  const hijri = gregorianToHijri(state.anchor, deskViewDate);
+  const weekdayName = WEEKDAYS_LONG_EN[isoWeekdayIndex(deskViewDate)];
+
+  document.getElementById("deskWeekday").textContent = weekdayName;
+  document.getElementById("deskDayNum").textContent = hijri.hijriDay;
+  document.getElementById("deskMonthName").textContent = HIJRI_MONTHS_EN[hijri.hijriMonth - 1];
+  document.getElementById("deskYear").textContent = `${hijri.hijriYear} Hijri`;
+  document.getElementById("deskHijriNumeric").textContent =
+    `${toHijriNumericDate(hijri.hijriDay, hijri.hijriMonth, hijri.hijriYear)} Hijri`;
+  document.getElementById("deskGregDate").textContent = toMediumGregLabel(deskViewDate);
+
+  const today = new Date();
+  const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+  document.querySelector(".desk-card").classList.toggle("is-today", isSameUTCDate(deskViewDate, todayUTC));
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function deskGoToPrevDay() {
+  deskViewDate = addDaysUTC(deskViewDate, -1);
+  renderDeskView();
+}
+
+function deskGoToNextDay() {
+  deskViewDate = addDaysUTC(deskViewDate, 1);
+  renderDeskView();
+}
+
+/* ---------------- Focus and Full screen toggles (Desk View) ---------------- */
+
+function setFocusMode(on) {
+  isFocusMode = on;
+  document.body.classList.toggle("focus-mode", isFocusMode);
+  const btn = document.getElementById("focusToggleBtn");
+  btn.setAttribute("aria-pressed", String(isFocusMode));
+  btn.setAttribute("title", isFocusMode ? "Exit focus view" : "Focus view");
+  btn.setAttribute("aria-label", isFocusMode ? "Exit focus view" : "Focus view");
+  btn.innerHTML = `<i data-lucide="${isFocusMode ? "eye-off" : "eye"}"></i>`;
+  if (window.lucide) lucide.createIcons();
+}
+
+function toggleFocusMode() {
+  setFocusMode(!isFocusMode);
+}
+
+function toggleFullscreenMode() {
+  if (!isFullscreenMode) {
+    const el = document.documentElement;
+    const request = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (request) request.call(el).catch(() => { /* ignore, still apply visual fullscreen state */ });
+    // Entering full screen always brings Focus along with it.
+    setFocusMode(true);
+  } else {
+    const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if (exit && (document.fullscreenElement || document.webkitFullscreenElement)) {
+      exit.call(document).catch(() => { /* ignore */ });
+    }
+  }
+  isFullscreenMode = !isFullscreenMode;
+  document.body.classList.toggle("fullscreen-mode", isFullscreenMode);
+  document.getElementById("fullscreenToggleBtn").setAttribute("aria-pressed", String(isFullscreenMode));
+}
+
+// Keep our visual state in sync if the user exits fullscreen via
+// browser UI (Esc key, etc.) rather than our own button.
+function handleFullscreenChange() {
+  const inFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  if (!inFullscreen && isFullscreenMode) {
+    isFullscreenMode = false;
+    document.body.classList.remove("fullscreen-mode");
+    document.getElementById("fullscreenToggleBtn").setAttribute("aria-pressed", "false");
+  }
 }
 
 /* ---------------- Navigation buttons ---------------- */
@@ -406,12 +526,23 @@ function init() {
   state.anchor = loaded.anchor;
   state.customized = loaded.customized;
   state.layout = loadLayout();
+  state.activeView = loadView();
 
   populateMonthSelect();
 
   document.getElementById("prevBtn").addEventListener("click", goToPrevMonth);
   document.getElementById("nextBtn").addEventListener("click", goToNextMonth);
   document.getElementById("layoutToggleBtn").addEventListener("click", toggleLayout);
+
+  document.getElementById("monthViewTab").addEventListener("click", () => switchToView("month"));
+  document.getElementById("deskViewTab").addEventListener("click", () => switchToView("desk"));
+  document.getElementById("deskPrevBtn").addEventListener("click", deskGoToPrevDay);
+  document.getElementById("deskNextBtn").addEventListener("click", deskGoToNextDay);
+  document.getElementById("focusToggleBtn").addEventListener("click", toggleFocusMode);
+  document.getElementById("fullscreenToggleBtn").addEventListener("click", toggleFullscreenMode);
+
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+  document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
   document.getElementById("settingsBtn").addEventListener("click", openDialog);
   document.getElementById("closeDialog").addEventListener("click", closeDialog);
@@ -438,6 +569,8 @@ function init() {
   });
 
   setViewToMonth(state.anchor.hijriMonth, state.anchor.hijriYear);
+  switchToView(state.activeView);
+  setFocusMode(false);
 
   if (window.lucide) lucide.createIcons();
 }

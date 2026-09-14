@@ -94,6 +94,30 @@
     return `${d} ${m}`;
   }
 
+  const WEEKDAYS_LONG_EN = [
+    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+  ];
+
+  const GREGORIAN_MONTHS_LONG = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  // "02/04/1448" style: dd/mm/yyyy in the Hijri calendar.
+  function toHijriNumericDate(hijriDay, hijriMonth, hijriYear) {
+    const d = String(hijriDay).padStart(2, "0");
+    const m = String(hijriMonth).padStart(2, "0");
+    return `${d}/${m}/${hijriYear}`;
+  }
+
+  // "14 Sep, 2026" style, used in Desk View.
+  function toMediumGregLabel(date) {
+    const d = String(date.getUTCDate()).padStart(2, "0");
+    const m = GREGORIAN_MONTHS_SHORT[date.getUTCMonth()];
+    const y = date.getUTCFullYear();
+    return `${d} ${m}, ${y}`;
+  }
+
   function addDaysUTC(date, days) {
     const copy = new Date(date.getTime());
     copy.setUTCDate(copy.getUTCDate() + days);
@@ -220,6 +244,8 @@
     HIJRI_MONTHS_EN,
     HIJRI_MONTHS_SHORT,
     GREGORIAN_MONTHS_SHORT,
+    GREGORIAN_MONTHS_LONG,
+    WEEKDAYS_LONG_EN,
     HIJRI_MONTHS_AR,
     HIJRI_MONTHS_BN,
     hijriMonthLength,
@@ -230,6 +256,8 @@
     toDisplayDate,
     toShortGregLabel,
     toShortHijriLabel,
+    toHijriNumericDate,
+    toMediumGregLabel,
     addDaysUTC,
     isSameUTCDate,
     isoWeekdayIndex,

@@ -44,38 +44,83 @@
 
   <main class="content">
 
-    <section class="month-switcher" aria-label="Month navigation">
-      <button class="nav-btn" id="prevBtn" title="Previous month">
-        <i data-lucide="chevron-left"></i>
+    <div class="view-switcher" role="tablist" aria-label="Calendar view">
+      <button class="view-tab" id="monthViewTab" role="tab" aria-selected="true" title="Month Grid" aria-label="Month Grid">
+        <i data-lucide="grid-3x3"></i>
       </button>
-
-      <div class="month-title">
-        <h2 id="monthNameEn">Rabi-us-Saani 1448</h2>
-        <p id="monthNameAr" class="ar">ربيع ثان ١٤٤٨</p>
-        <p id="monthNameBn" class="bn">রবিউস সানি ১৪৪৮</p>
-        <p id="monthRangeEn" class="range">September, October 2026</p>
-      </div>
-
-      <button class="nav-btn" id="nextBtn" title="Next month">
-        <i data-lucide="chevron-right"></i>
+      <button class="view-tab" id="deskViewTab" role="tab" aria-selected="false" title="Desk View" aria-label="Desk View">
+        <i data-lucide="square"></i>
       </button>
+    </div>
+
+    <section class="month-view" id="monthView">
+
+      <section class="month-switcher" aria-label="Month navigation">
+        <button class="nav-btn" id="prevBtn" title="Previous month">
+          <i data-lucide="chevron-left"></i>
+        </button>
+
+        <div class="month-title">
+          <h2 id="monthNameEn">Rabi-us-Saani 1448</h2>
+          <p id="monthNameAr" class="ar">ربيع ثان ١٤٤٨</p>
+          <p id="monthNameBn" class="bn">রবিউস সানি ১৪৪৮</p>
+          <p id="monthRangeEn" class="range">September, October 2026</p>
+        </div>
+
+        <button class="nav-btn" id="nextBtn" title="Next month">
+          <i data-lucide="chevron-right"></i>
+        </button>
+      </section>
+
+      <section class="calendar-card">
+        <div class="weekday-row" id="weekdayRow"></div>
+        <div class="days-grid" id="daysGrid"></div>
+      </section>
+
+      <section class="legend">
+        <div class="legend-item">
+          <span class="dot dot-today"></span> Today
+        </div>
+        <div class="legend-item">
+          <span class="dot dot-friday"></span> Friday
+        </div>
+      </section>
+
     </section>
 
-    <section class="calendar-card">
-      <div class="weekday-row" id="weekdayRow"></div>
-      <div class="days-grid" id="daysGrid"></div>
-    </section>
+    <section class="desk-view" id="deskView" hidden>
 
-    <section class="legend">
-      <div class="legend-item">
-        <span class="dot dot-today"></span> Today
+      <div class="desk-nav">
+        <button class="nav-btn" id="deskPrevBtn" title="Previous day">
+          <i data-lucide="chevron-left"></i>
+        </button>
+
+        <div class="desk-card">
+          <p class="desk-weekday" id="deskWeekday">Monday</p>
+          <p class="desk-day-num" id="deskDayNum">2</p>
+          <p class="desk-month-name" id="deskMonthName">Rabi-us-Saani</p>
+          <p class="desk-year" id="deskYear">1448 Hijri</p>
+          <p class="desk-hijri-numeric" id="deskHijriNumeric">02/04/1448 Hijri</p>
+          <p class="desk-greg-date" id="deskGregDate">14 Sep, 2026</p>
+        </div>
+
+        <button class="nav-btn" id="deskNextBtn" title="Next day">
+          <i data-lucide="chevron-right"></i>
+        </button>
       </div>
-      <div class="legend-item">
-        <span class="dot dot-friday"></span> Friday
+
+      <div class="desk-tools">
+        <button class="desk-tool-btn" id="focusToggleBtn" title="Focus view" aria-pressed="false" aria-label="Focus view">
+          <i data-lucide="eye"></i>
+        </button>
+        <button class="desk-tool-btn" id="fullscreenToggleBtn" title="Full screen" aria-pressed="false" aria-label="Full screen">
+          <i data-lucide="maximize"></i>
+        </button>
       </div>
+
     </section>
 
-    <footer class="page-footer">
+    <footer class="page-footer" id="pageFooter">
       <a class="fb-link" href="https://facebook.com/islamicfoundationbangladesh/" target="_blank" rel="noopener noreferrer">
         <i data-lucide="facebook"></i>
         <span>Islamic Foundation, Bangladesh</span>
