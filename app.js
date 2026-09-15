@@ -116,6 +116,7 @@ function render() {
   renderWeekdayRow();
   renderDaysGrid();
   renderToggleUI();
+  updateNoticeButton(state.viewMonth, state.viewYear);
   if (window.lucide) lucide.createIcons();
 }
 
@@ -258,6 +259,8 @@ function renderDeskView() {
   const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
   document.querySelector(".desk-card").classList.toggle("is-today", isSameUTCDate(deskViewDate, todayUTC));
 
+  updateNoticeButton(hijri.hijriMonth, hijri.hijriYear);
+
   if (window.lucide) lucide.createIcons();
 }
 
@@ -269,6 +272,57 @@ function deskGoToPrevDay() {
 function deskGoToNextDay() {
   deskViewDate = addDaysUTC(deskViewDate, 1);
   renderDeskView();
+}
+
+/* ---------------- View notice (Facebook embed popup) ---------------- */
+
+// Tracks the link currently associated with the notice button, so the
+// dialog knows what to embed when opened.
+let currentNoticeLink = "";
+
+function updateNoticeButton(hijriMonth, hijriYear) {
+  const anchor = findNearestAnchor(state.anchors, hijriMonth, hijriYear);
+  const btn = document.getElementById("viewNoticeBtn");
+
+  // Only offer a notice when the governing anchor is an EXACT match for
+  // this month (not one borrowed from a neighboring month via nearest-
+  // anchor interpolation), and that anchor actually has a link.
+  const isExactAnchor = anchor.hijriMonth === hijriMonth && anchor.hijriYear === hijriYear;
+  const link = isExactAnchor && anchor.link ? anchor.link : "";
+
+  currentNoticeLink = link;
+  btn.disabled = !link;
+  btn.title = link ? "View this month's announcement" : "No announcement linked for this month";
+}
+
+function openNoticeDialog() {
+  if (!currentNoticeLink) return;
+
+  document.getElementById("noticeOpenLink").href = currentNoticeLink;
+
+  const wrap = document.getElementById("noticeEmbedWrap");
+  wrap.innerHTML = "";
+  const embedDiv = document.createElement("div");
+  embedDiv.className = "fb-post";
+  embedDiv.setAttribute("data-href", currentNoticeLink);
+  embedDiv.setAttribute("data-width", "500");
+  wrap.appendChild(embedDiv);
+
+  // Ask the Facebook SDK to scan for and render the new .fb-post markup
+  // we just inserted. If the SDK hasn't finished loading yet (it's
+  // loaded with `async defer`), this is skipped silently -- the
+  // "open in a new tab" fallback link still works regardless.
+  if (window.FB && window.FB.XFBML) {
+    window.FB.XFBML.parse(wrap);
+  }
+
+  document.getElementById("noticeOverlay").classList.add("show");
+  document.getElementById("noticeDialog").classList.add("show");
+}
+
+function closeNoticeDialog() {
+  document.getElementById("noticeOverlay").classList.remove("show");
+  document.getElementById("noticeDialog").classList.remove("show");
 }
 
 /* ---------------- Focus and Full screen toggles (Desk View) ---------------- */
@@ -575,6 +629,10 @@ async function init() {
   document.getElementById("applyBtn").addEventListener("click", applySettings);
   document.getElementById("resetDefaultBtn").addEventListener("click", resetToDefault);
 
+  document.getElementById("viewNoticeBtn").addEventListener("click", openNoticeDialog);
+  document.getElementById("closeNoticeDialog").addEventListener("click", closeNoticeDialog);
+  document.getElementById("noticeOverlay").addEventListener("click", closeNoticeDialog);
+
   document.getElementById("gregStartInput").addEventListener("focus", openDatePicker);
   document.getElementById("gregStartInput").addEventListener("input", handlePickerInputChange);
   document.getElementById("calendarIconBtn").addEventListener("click", toggleDatePicker);
@@ -590,7 +648,10 @@ async function init() {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeDialog();
+    if (e.key === "Escape") {
+      closeDialog();
+      closeNoticeDialog();
+    }
   });
 
   const latest = getLatestAnchor();

@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hijri Calendar, Bangladesh</title>
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-89W418LFVM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-89W418LFVM');
+</script>
+
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
@@ -16,6 +26,9 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0"></script>
 
 <div class="app">
 
@@ -121,6 +134,10 @@
     </section>
 
     <footer class="page-footer" id="pageFooter">
+      <button class="notice-link" id="viewNoticeBtn" title="View this month's announcement" disabled>
+        <i data-lucide="megaphone"></i>
+        <span>View notice</span>
+      </button>
       <a class="fb-link" href="https://facebook.com/islamicfoundationbangladesh/" target="_blank" rel="noopener noreferrer">
         <i data-lucide="facebook"></i>
         <span>Islamic Foundation, Bangladesh</span>
@@ -130,6 +147,31 @@
 
   </main>
 
+</div>
+
+<!-- Notice Dialog -->
+<div class="overlay" id="noticeOverlay"></div>
+<div class="dialog notice-dialog" id="noticeDialog" role="dialog" aria-modal="true" aria-labelledby="noticeDialogTitle">
+  <div class="dialog-head">
+    <h3 id="noticeDialogTitle">Month announcement</h3>
+    <button class="icon-btn close-btn" id="closeNoticeDialog" title="Close">
+      <i data-lucide="x"></i>
+    </button>
+  </div>
+
+  <div class="dialog-body">
+    <div class="notice-embed-wrap" id="noticeEmbedWrap"></div>
+
+    <p class="dialog-hint">
+      If the embedded post above isn't showing, click the button below to open the
+      notice directly on Facebook instead.
+    </p>
+
+    <a class="btn-primary notice-open-link" id="noticeOpenLink" href="#" target="_blank" rel="noopener noreferrer">
+      <i data-lucide="external-link"></i>
+      Open notice in a new tab
+    </a>
+  </div>
 </div>
 
 <!-- Settings Dialog -->
