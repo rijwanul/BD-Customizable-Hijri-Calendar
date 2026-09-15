@@ -144,8 +144,9 @@
 
   <div class="dialog-body">
     <p class="dialog-hint">
-      Tell the calendar when a Hijri month began, and it will build the rest around it.
-      This overrides the Bangladesh default.
+      Confirm when the newest Hijri month began, and the calendar will build
+      forward from it. This adds a new confirmed month; it never changes the
+      confirmed start date of any earlier month.
     </p>
 
     <label class="field">
@@ -186,6 +187,11 @@
       </div>
     </label>
 
+    <label class="field">
+      <span>Announcement link (optional)</span>
+      <input type="url" id="announcementLinkInput" placeholder="https://facebook.com/...">
+    </label>
+
     <div class="dialog-actions">
       <button class="btn-secondary" id="resetDefaultBtn">
         <i data-lucide="rotate-ccw"></i>
@@ -193,7 +199,7 @@
       </button>
       <button class="btn-primary" id="applyBtn">
         <i data-lucide="check"></i>
-        Apply
+        Add this month
       </button>
     </div>
   </div>

@@ -14,8 +14,7 @@ const {
   WEEKDAYS_LONG_EN,
   HIJRI_MONTHS_AR,
   HIJRI_MONTHS_BN,
-  hijriMonthLength,
-  DEFAULT_ANCHOR,
+  hijriMonthLengthForList,
   parseISODate,
   toISODate,
   toShortGregLabel,
@@ -25,11 +24,15 @@ const {
   addDaysUTC,
   isSameUTCDate,
   isoWeekdayIndex,
-  computeGregStartFor,
-  gregorianToHijri,
-  loadAnchor,
-  saveAnchor,
-  clearSavedAnchor
+  findNearestAnchor,
+  computeGregStartForList,
+  gregorianToHijriList,
+  fetchShippedAnchors,
+  loadUserAnchors,
+  saveUserAnchor,
+  clearUserAnchors,
+  mergeAnchors,
+  sortAnchors
 } = HijriCore;
 
 const WEEKDAYS_EN = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
@@ -39,8 +42,8 @@ const VIEW_STORAGE_KEY = "hijriCalendarView_v1"; // "month" or "desk"
 /* ---------------- State ---------------- */
 
 let state = {
-  anchor: null,
-  customized: false,
+  anchors: [],           // full merged anchor list (shipped anchors.json + user additions)
+  hasUserAnchor: false,  // true if the user has added at least one anchor of their own
   viewMonth: null,
   viewYear: null,
   viewGregStart: null,
@@ -103,7 +106,7 @@ function gregRangeLabel(startDate, endDate) {
 function setViewToMonth(month, year) {
   state.viewMonth = month;
   state.viewYear = year;
-  state.viewGregStart = computeGregStartFor(state.anchor, month, year);
+  state.viewGregStart = computeGregStartForList(state.anchors, month, year);
   render();
 }
 
@@ -118,13 +121,13 @@ function render() {
 
 function renderRegionLine() {
   const el = document.getElementById("regionLine");
-  el.textContent = state.customized
+  el.textContent = state.hasUserAnchor
     ? "Custom start date set"
     : "Default calendar for Bangladesh";
 }
 
 function renderHeader() {
-  const monthLen = hijriMonthLength(state.viewMonth);
+  const monthLen = hijriMonthLengthForList(state.anchors, state.viewMonth, state.viewYear);
   const startDate = state.viewGregStart;
   const endDate = addDaysUTC(startDate, monthLen - 1);
 
@@ -153,7 +156,7 @@ function renderDaysGrid() {
   grid.innerHTML = "";
   grid.classList.toggle("greg-top", state.layout === "gregorian-top");
 
-  const monthLen = hijriMonthLength(state.viewMonth);
+  const monthLen = hijriMonthLengthForList(state.anchors, state.viewMonth, state.viewYear);
   const startDate = state.viewGregStart;
   const leadingEmpty = isoWeekdayIndex(startDate); // 0=Mon
 
@@ -240,7 +243,7 @@ function switchToView(view) {
 }
 
 function renderDeskView() {
-  const hijri = gregorianToHijri(state.anchor, deskViewDate);
+  const hijri = gregorianToHijriList(state.anchors, deskViewDate);
   const weekdayName = WEEKDAYS_LONG_EN[isoWeekdayIndex(deskViewDate)];
 
   document.getElementById("deskWeekday").textContent = weekdayName;
@@ -349,12 +352,23 @@ function populateMonthSelect() {
   });
 }
 
-function openDialog() {
-  document.getElementById("hijriMonthSelect").value = state.anchor.hijriMonth;
-  document.getElementById("hijriYearInput").value = state.anchor.hijriYear;
+// The anchor to prefill the dialog with: the most recently confirmed
+// month in the current list, since Set Start Date is for confirming
+// the NEXT month going forward, not editing history.
+function getLatestAnchor() {
+  const sorted = sortAnchors(state.anchors);
+  return sorted[sorted.length - 1];
+}
 
-  const anchorDate = parseISODate(state.anchor.gregStart);
+function openDialog() {
+  const latest = getLatestAnchor();
+  document.getElementById("hijriMonthSelect").value = latest.hijriMonth;
+  document.getElementById("hijriYearInput").value = latest.hijriYear;
+
+  const anchorDate = parseISODate(latest.gregStart);
   setPickerDate(anchorDate);
+
+  document.getElementById("announcementLinkInput").value = "";
 
   document.getElementById("overlay").classList.add("show");
   document.getElementById("settingsDialog").classList.add("show");
@@ -371,6 +385,7 @@ function closeDialog() {
 function applySettings() {
   const month = parseInt(document.getElementById("hijriMonthSelect").value, 10);
   const year = parseInt(document.getElementById("hijriYearInput").value, 10);
+  const link = document.getElementById("announcementLinkInput").value.trim();
 
   if (!month || !year || !pickerSelectedDate) {
     alert("Please fill in the Hijri month, year, and Gregorian start date.");
@@ -385,21 +400,29 @@ function applySettings() {
     gregStart,
     lastUpdated: toISODate(new Date(Date.UTC(
       today.getFullYear(), today.getMonth(), today.getDate()
-    )))
+    ))),
+    link: link || ""
   };
-  state.anchor = newAnchor;
-  state.customized = true;
-  saveAnchor(newAnchor);
+
+  // Adds (or replaces, if the same month/year was already set by the
+  // user before) this anchor, WITHOUT touching any other month's
+  // confirmed date. Older confirmed months keep exactly what they had.
+  saveUserAnchor(newAnchor);
+  state.anchors = mergeAnchors(state.anchors, loadUserAnchors());
+  state.hasUserAnchor = true;
 
   setViewToMonth(month, year);
   closeDialog();
 }
 
 function resetToDefault() {
-  state.anchor = { ...DEFAULT_ANCHOR };
-  state.customized = false;
-  clearSavedAnchor();
-  setViewToMonth(DEFAULT_ANCHOR.hijriMonth, DEFAULT_ANCHOR.hijriYear);
+  clearUserAnchors();
+  fetchShippedAnchors().then(shipped => {
+    state.anchors = sortAnchors(shipped);
+    state.hasUserAnchor = false;
+    const latest = getLatestAnchor();
+    setViewToMonth(latest.hijriMonth, latest.hijriYear);
+  });
   closeDialog();
 }
 
@@ -521,10 +544,12 @@ function handlePickerInputChange() {
 
 /* ---------------- Init ---------------- */
 
-function init() {
-  const loaded = loadAnchor();
-  state.anchor = loaded.anchor;
-  state.customized = loaded.customized;
+async function init() {
+  const shipped = await fetchShippedAnchors();
+  const userAnchors = loadUserAnchors();
+  state.anchors = mergeAnchors(shipped, userAnchors);
+  state.hasUserAnchor = userAnchors.length > 0;
+
   state.layout = loadLayout();
   state.activeView = loadView();
 
@@ -568,7 +593,8 @@ function init() {
     if (e.key === "Escape") closeDialog();
   });
 
-  setViewToMonth(state.anchor.hijriMonth, state.anchor.hijriYear);
+  const latest = getLatestAnchor();
+  setViewToMonth(latest.hijriMonth, latest.hijriYear);
   switchToView(state.activeView);
   setFocusMode(false);
 
