@@ -882,6 +882,14 @@ body.fullscreen-mode .desk-greg-date{ font-size: 1.2rem; }
   overflow-x: auto;
 }
 
+.notice-updated{
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink-faint);
+  margin: 0 0 12px;
+}
+
 .notice-open-link{
   width: 100%;
   text-decoration: none;

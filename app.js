@@ -276,9 +276,11 @@ function deskGoToNextDay() {
 
 /* ---------------- View notice (Facebook embed popup) ---------------- */
 
-// Tracks the link currently associated with the notice button, so the
-// dialog knows what to embed when opened.
+// Tracks the link/lastUpdated/month name currently associated with the
+// notice button, so the dialog knows what to embed and display when opened.
 let currentNoticeLink = "";
+let currentNoticeLastUpdated = "";
+let currentNoticeMonthName = "";
 
 function updateNoticeButton(hijriMonth, hijriYear) {
   const anchor = findNearestAnchor(state.anchors, hijriMonth, hijriYear);
@@ -291,6 +293,8 @@ function updateNoticeButton(hijriMonth, hijriYear) {
   const link = isExactAnchor && anchor.link ? anchor.link : "";
 
   currentNoticeLink = link;
+  currentNoticeLastUpdated = isExactAnchor ? anchor.lastUpdated : "";
+  currentNoticeMonthName = HIJRI_MONTHS_EN[hijriMonth - 1];
   btn.disabled = !link;
   btn.title = link ? "View this month's announcement" : "No announcement linked for this month";
 }
@@ -298,7 +302,18 @@ function updateNoticeButton(hijriMonth, hijriYear) {
 function openNoticeDialog() {
   if (!currentNoticeLink) return;
 
+  document.getElementById("noticeDialogTitle").textContent =
+    `Month announcement: ${currentNoticeMonthName}`;
+
   document.getElementById("noticeOpenLink").href = currentNoticeLink;
+
+  const updatedEl = document.getElementById("noticeUpdated");
+  if (currentNoticeLastUpdated) {
+    updatedEl.textContent = `Last updated: ${toMediumGregLabel(parseISODate(currentNoticeLastUpdated))}`;
+    updatedEl.hidden = false;
+  } else {
+    updatedEl.hidden = true;
+  }
 
   const wrap = document.getElementById("noticeEmbedWrap");
   wrap.innerHTML = "";
