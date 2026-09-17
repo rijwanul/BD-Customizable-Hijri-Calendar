@@ -2,70 +2,263 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hijri Calendar - Data Endpoint</title>
-<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Get the Hijri Calendar Browser Extension for Edge &amp; Chrome | hijri.iiuc.net</title>
+<meta name="description" content="Install the Hijri Calendar, Bangladesh extension for Microsoft Edge, Chrome and other Chromium browsers. Today's Hijri date on every new tab, plus a toolbar popup with the full month. Free download.">
+<meta name="keywords" content="Hijri calendar extension, Edge add-on Hijri calendar, Chrome Islamic calendar extension, new tab Hijri date, Bangladesh Hijri calendar browser extension">
+<link rel="canonical" href="https://hijri.iiuc.net/get/theme/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hijri Calendar, Bangladesh">
+<meta property="og:title" content="Hijri Calendar browser extension for Edge &amp; Chrome">
+<meta property="og:description" content="Today's Hijri date on every new tab, following the Islamic Foundation, Bangladesh announcements.">
+<meta property="og:url" content="https://hijri.iiuc.net/get/theme/">
+<meta property="og:image" content="https://hijri.iiuc.net/get/theme/images/landscape-featured.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-89W418LFVM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-89W418LFVM');
+</script>
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Serif+Bengali:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/pages.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Hijri Calendar, Bangladesh - Browser Extension",
+  "operatingSystem": "Microsoft Edge, Google Chrome, Chromium",
+  "applicationCategory": "BrowserApplication",
+  "url": "https://hijri.iiuc.net/get/theme/",
+  "downloadUrl": "https://hijri.iiuc.net/get/theme/download/hijri-edge-extension.zip",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "publisher": { "@type": "Organization", "name": "IIUC Network", "url": "https://iiuc.net/" }
+}
+</script>
 </head>
 <body>
-<pre id="out">{"status":"loading"}</pre>
 
-<script src="../../hijri-core.js"></script>
-<script>
-(async function () {
-  const {
-    HIJRI_MONTHS_EN,
-    HIJRI_MONTHS_AR,
-    HIJRI_MONTHS_BN,
-    toISODate,
-    toHijriNumericDate,
-    gregorianToHijriList,
-    fetchShippedAnchors,
-    mergeAnchors
-  } = HijriCore;
+<div class="page">
 
-  const out = document.getElementById("out");
+  <header class="page-topbar">
+    <a class="brand" href="/">
+      <img class="brand-mark" src="/favicon-180.png" alt="Hijri Calendar, Bangladesh logo" width="44" height="44">
+      <div class="brand-text">
+        <h1 style="font-size:1.05rem;">Hijri Calendar</h1>
+        <p class="brand-sub">Default calendar for Bangladesh</p>
+      </div>
+    </a>
 
-  function respond(obj) {
-    out.textContent = JSON.stringify(obj);
-  }
+    <a class="back-link" href="/">
+      <i data-lucide="arrow-left"></i>
+      <span>Back to calendar</span>
+    </a>
+  </header>
 
-  try {
-    // anchors.json lives at the site root; this page is two levels deep.
-    const originalFetch = window.fetch.bind(window);
-    window.fetch = function (url, opts) {
-      if (url === "anchors.json") {
-        return originalFetch("../../anchors.json", opts);
-      }
-      return originalFetch(url, opts);
-    };
+  <section class="page-hero">
+    <span class="hero-badge">
+      <i data-lucide="puzzle"></i>
+      Browser Extension
+    </span>
+    <h1>Hijri date on every new tab</h1>
+    <p class="hero-sub">
+      Install the Hijri Calendar, Bangladesh extension in Microsoft Edge, Chrome, Brave, Opera or
+      any other Chromium browser. Your new tab shows today's Hijri date, and the toolbar icon opens
+      the full month - all following the Islamic Foundation, Bangladesh announcements.
+    </p>
 
-    const shippedAnchors = await fetchShippedAnchors();
-    // No localStorage user anchors on this bare endpoint page — shipped anchors.json is ground truth here.
-    const anchors = mergeAnchors(shippedAnchors, []);
+    <img class="hero-shot" src="images/featured.png"
+         alt="Hijri Calendar browser extension showing today's Hijri date on the new tab page"
+         width="440" height="280">
 
-    const now = new Date();
-    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    <div class="btn-row">
+      <a class="btn-lg btn-fill" href="download/hijri-edge-extension.zip" download>
+        <i data-lucide="download"></i>
+        Download ZIP
+      </a>
+      <span class="btn-lg btn-disabled" aria-disabled="true">
+        <i data-lucide="store"></i>
+        Get it on Edge Add-ons
+      </span>
+      <p class="btn-note">
+        Our listing is currently under review on the Microsoft Edge Add-ons store. Until it is
+        approved, please use the ZIP download and the short guide below.
+      </p>
+    </div>
+  </section>
 
-    const { hijriDay, hijriMonth, hijriYear } = gregorianToHijriList(anchors, todayUTC);
+  <section class="card">
+    <h2><i data-lucide="sparkles"></i> What it does</h2>
+    <div class="features">
+      <div class="feature">
+        <h4><i data-lucide="layout-dashboard"></i> New tab date card</h4>
+        <p>Every new tab opens with today's numeric Hijri date and the month name in English, Arabic and Bengali.</p>
+      </div>
+      <div class="feature">
+        <h4><i data-lucide="calendar-days"></i> Toolbar month view</h4>
+        <p>Click the toolbar icon for a compact month grid with the Gregorian date under each Hijri day.</p>
+      </div>
+      <div class="feature">
+        <h4><i data-lucide="refresh-cw"></i> Stays in sync</h4>
+        <p>Month start dates are read from hijri.iiuc.net, so new moon-sighting announcements arrive automatically.</p>
+      </div>
+      <div class="feature">
+        <h4><i data-lucide="shield-check"></i> Light and private</h4>
+        <p>No account, no advertising, no browsing data collected. It only reads the public calendar data file.</p>
+      </div>
+    </div>
+  </section>
 
-    respond({
-      status: "ok",
-      gregorianDate: toISODate(todayUTC),
-      hijri: {
-        day: hijriDay,
-        month: hijriMonth,
-        monthNameEn: HIJRI_MONTHS_EN[hijriMonth - 1],
-        monthNameAr: HIJRI_MONTHS_AR[hijriMonth - 1],
-        monthNameBn: HIJRI_MONTHS_BN[hijriMonth - 1],
-        year: hijriYear,
-        numeric: toHijriNumericDate(hijriDay, hijriMonth, hijriYear)
-      },
-      siteUrl: "https://hijri.iiuc.net/",
-      generatedAt: new Date().toISOString()
-    });
-  } catch (e) {
-    respond({ status: "error", message: String(e && e.message ? e.message : e) });
-  }
-})();
-</script>
+  <section class="card">
+    <h2><i data-lucide="image"></i> Screenshots</h2>
+    <div class="shots">
+      <figure class="shot">
+        <img src="images/ss-1.png" alt="New tab page showing the Hijri date card" loading="lazy">
+        <figcaption>The new tab card with today's Hijri date</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="images/ss-2.png" alt="Toolbar popup showing the Hijri month grid" loading="lazy">
+        <figcaption>Toolbar popup with the full month grid</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="images/ss-3.png" alt="Extension settings inside the toolbar popup" loading="lazy">
+        <figcaption>Settings, right inside the popup</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><i data-lucide="list-checks"></i> How to install the ZIP</h2>
+    <p>
+      The extension is not on the Edge Add-ons store yet, so it has to be loaded as an unpacked
+      extension. It takes about a minute and works the same way in Edge, Chrome, Brave and Opera.
+    </p>
+
+    <ol class="steps">
+      <li>
+        <strong>Download the ZIP.</strong> Use the <em>Download ZIP</em> button above to save
+        <code>hijri-edge-extension.zip</code> to your computer.
+      </li>
+      <li>
+        <strong>Unzip it.</strong> Right-click the file and choose <em>Extract All</em> on Windows,
+        or double-click it on macOS. Keep the extracted folder somewhere permanent such as
+        <code>Documents</code> - if you delete or move it later, the extension stops working.
+      </li>
+      <li>
+        <strong>Open the extensions page.</strong> In Edge go to <code>edge://extensions</code>.
+        In Chrome, Brave or Opera go to <code>chrome://extensions</code>.
+      </li>
+      <li>
+        <strong>Turn on Developer mode.</strong> The toggle sits in the left sidebar in Edge and in
+        the top-right corner in Chrome.
+      </li>
+      <li>
+        <strong>Load the folder.</strong> Click <em>Load unpacked</em> and select the folder you
+        extracted - the one that contains <code>manifest.json</code>. Do not select the ZIP file itself.
+      </li>
+      <li>
+        <strong>Open a new tab.</strong> The Hijri date card appears right away. Pin the extension
+        from the toolbar puzzle icon to keep the month view one click away.
+      </li>
+    </ol>
+
+    <div class="callout">
+      <i data-lucide="alert-triangle"></i>
+      <p>
+        Your browser may show a reminder that developer-mode extensions are running. That is normal
+        for unpacked extensions and it will go away once our store listing is approved and you
+        install from Edge Add-ons instead.
+      </p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><i data-lucide="help-circle"></i> Common questions</h2>
+
+    <details class="faq">
+      <summary>Will it work in Chrome, Brave or Opera?</summary>
+      <p>
+        Yes. It is a standard Chromium extension, so it loads the same way in Edge, Chrome, Brave,
+        Opera, Vivaldi and other Chromium-based browsers. It does not work in Firefox or Safari.
+      </p>
+    </details>
+
+    <details class="faq">
+      <summary>Why must I keep the extracted folder?</summary>
+      <p>
+        Unpacked extensions run directly from that folder on disk. If it is deleted or renamed, the
+        browser disables the extension. Keeping it in a stable location avoids that.
+      </p>
+    </details>
+
+    <details class="faq">
+      <summary>Does it replace my new tab page?</summary>
+      <p>
+        It adds the Hijri date card to the new tab. Your browser may ask you to confirm the change
+        the first time, and you can revert it at any point by removing the extension.
+      </p>
+    </details>
+
+    <details class="faq">
+      <summary>How do I update it later?</summary>
+      <p>
+        Download the newest ZIP from this page, extract it over the old folder, then click the
+        refresh icon on the extension card in the extensions page. Once the store listing is live,
+        updates will install automatically.
+      </p>
+    </details>
+
+    <details class="faq">
+      <summary>Is there something for Windows outside the browser?</summary>
+      <p>
+        Yes - <a href="/get/HijriTray/">HijriTray</a> puts the Hijri date in your Windows
+        system tray, no browser needed.
+      </p>
+    </details>
+  </section>
+
+</div>
+
+<footer class="site-footer" id="siteFooter">
+  <div class="site-footer-inner">
+
+    <div class="footer-col">
+      <h4>ABOUT</h4>
+      <a href="/about/">About Us</a>
+      <a href="https://iiuc.net/" target="_blank" rel="noopener noreferrer">IIUC Network</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>COMMUNITY</h4>
+      <a href="https://t.me/iiuc_net_channel" target="_blank" rel="noopener noreferrer">Telegram Channel</a>
+      <a href="https://facebook.com/iiuc.net" target="_blank" rel="noopener noreferrer">Facebook Page</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>GET THE APP</h4>
+      <a href="/get/theme/">Get Edge Extension</a>
+      <a href="/get/HijriTray/">Get HijriTray for Windows</a>
+    </div>
+
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
 </body>
 </html>

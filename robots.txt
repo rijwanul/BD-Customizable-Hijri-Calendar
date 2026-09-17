@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /get/theme/data.html
+
+Sitemap: https://hijri.iiuc.net/sitemap.xml

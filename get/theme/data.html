@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hijri Calendar - Data Endpoint</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+</head>
+<body>
+<pre id="out">{"status":"loading"}</pre>
+
+<script src="/hijri-core.js"></script>
+<script>
+(async function () {
+  const {
+    HIJRI_MONTHS_EN,
+    HIJRI_MONTHS_AR,
+    HIJRI_MONTHS_BN,
+    toISODate,
+    toHijriNumericDate,
+    gregorianToHijriList,
+    fetchShippedAnchors,
+    mergeAnchors
+  } = HijriCore;
+
+  const out = document.getElementById("out");
+
+  function respond(obj) {
+    out.textContent = JSON.stringify(obj);
+  }
+
+  try {
+    // anchors.json lives at the site root; this page is two levels deep.
+    const originalFetch = window.fetch.bind(window);
+    window.fetch = function (url, opts) {
+      if (url === "anchors.json") {
+        return originalFetch("/anchors.json", opts);
+      }
+      return originalFetch(url, opts);
+    };
+
+    const shippedAnchors = await fetchShippedAnchors();
+    // No localStorage user anchors on this bare endpoint page — shipped anchors.json is ground truth here.
+    const anchors = mergeAnchors(shippedAnchors, []);
+
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+
+    const { hijriDay, hijriMonth, hijriYear } = gregorianToHijriList(anchors, todayUTC);
+
+    respond({
+      status: "ok",
+      gregorianDate: toISODate(todayUTC),
+      hijri: {
+        day: hijriDay,
+        month: hijriMonth,
+        monthNameEn: HIJRI_MONTHS_EN[hijriMonth - 1],
+        monthNameAr: HIJRI_MONTHS_AR[hijriMonth - 1],
+        monthNameBn: HIJRI_MONTHS_BN[hijriMonth - 1],
+        year: hijriYear,
+        numeric: toHijriNumericDate(hijriDay, hijriMonth, hijriYear)
+      },
+      siteUrl: "https://hijri.iiuc.net/",
+      generatedAt: new Date().toISOString()
+    });
+  } catch (e) {
+    respond({ status: "error", message: String(e && e.message ? e.message : e) });
+  }
+})();
+</script>
+</body>
+</html>
