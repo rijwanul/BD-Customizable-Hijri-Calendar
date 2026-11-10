@@ -1,7 +1,18 @@
 {
-  "version": "0.9.0",
-  "downloadUrl": "https://hijri.iiuc.net/get/HijriTray/downloads/HijriTraySetup-1.0.1.exe",
-  "sha256": "optional",
+  "version": "1.0.2",
+  "downloadUrl": "https://hijri.iiuc.net/get/HijriTray/downloads/HijriTraySetup-1.0.2.exe",
+  "sha256": "",
   "releasedOn": "2026-11-10",
-  "changelog": ["What changed 1", "What changed 2"]
+  "changelog": [
+    "Fixed: new data from hijri.iiuc.net now shows up in the app. Saving anchors in Settings no longer stops online syncing.",
+    "Manual edits now only protect the months you changed. All other months keep updating from online.",
+    "New sync indicator in the popup and tray tooltip: synced, synced with custom data, or not synced, with the last sync time.",
+    "New Refresh now button in the popup to sync instantly.",
+    "Settings: new Source column shows whether each month is Online or Manual. A ⚠ flag and a Use online button appear when online has a different date than the one you set.",
+    "Settings: new Sync fully button to discard all manual edits and take everything from online.",
+    "Raw JSON tab now shows the current combined data, and months you change become manual.",
+    "Your existing saved anchors are converted automatically: months that match online go back to following online.",
+    "The app version is now shown in the popup, Settings and tray menu.",
+    "New automatic update check, with View changelog and Update now."
+  ]
 }

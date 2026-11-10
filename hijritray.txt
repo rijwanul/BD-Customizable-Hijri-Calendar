@@ -1,7 +1,0 @@
-{
-  "version": "0.9.0",
-  "downloadUrl": "https://hijri.iiuc.net/downloads/HijriTraySetup-0.9.0.exe",
-  "sha256": "optional",
-  "releasedOn": "2026-12-01",
-  "changelog": ["What changed 1", "What changed 2"]
-}
